@@ -43,6 +43,7 @@ import { RaceState, type Ctx } from '../types';
 import type { TouchControls } from '../core/TouchControls';
 import type { Scheme } from '../core/ControlPrefs';
 import { el, clamp } from './uiUtil';
+import { languageText } from './Language';
 
 type Opt<T> = { value: T; label: string; note?: string };
 
@@ -118,7 +119,9 @@ export class ControlsMenu {
       const c = el('div', 'kc-card', left);
       c.innerHTML =
         `<div class="kc-glyph kc-g-${s.glyph}"><i></i><b></b></div>` +
-        `<div class="kc-card-t"><em>${s.name}</em><span>${s.blurb}</span></div>`;
+        `<div class="kc-card-t"><em></em><span></span></div>`;
+      languageText(c.querySelector('em')!, s.name);
+      languageText(c.querySelector('span')!, s.blurb);
       c.onclick = () => this.chooseScheme(s.id);
       this.cards.set(s.id, c);
     }
@@ -239,7 +242,7 @@ export class ControlsMenu {
       // that cannot steer — say so and stay put.
       const ok = await pad.requestTilt();
       if (!ok) {
-        this.tiltVal.textContent = 'motion access was refused';
+        languageText(this.tiltVal, 'motion access was refused');
         return;
       }
     }
@@ -278,9 +281,9 @@ export class ControlsMenu {
       this.meterNum.textContent = (s >= 0 ? '+' : '−') + Math.abs(s).toFixed(2);
     }
     if (pad.prefs.scheme === 'tilt') {
-      this.tiltVal.textContent = pad.tiltAvailable
+      languageText(this.tiltVal, pad.tiltAvailable
         ? `${pad.tiltDegrees >= 0 ? '+' : '−'}${Math.abs(pad.tiltDegrees).toFixed(0)}° of roll`
-        : 'waiting for the sensor…';
+        : 'waiting for the sensor…');
     }
     // Pausing is fine; finishing a race behind this screen is not a state it
     // should survive, and neither is the race being reset out from under it.

@@ -40,6 +40,7 @@ import {
 } from '../types';
 import { EPS, mtof, Synth } from './Synth';
 import { Music } from './Music';
+import { isMusicEnabled } from './MusicPreference';
 
 // --- module scope scratch: nothing in update() allocates ---------------------
 const _camPos = new THREE.Vector3();
@@ -999,7 +1000,7 @@ export class Audio implements System {
       this.synth = s;
       this.ambience = new Ambience(s);
       this.charge = new DriftCharge(s);
-      this.music = new Music(s);
+      this.music = new Music(s, isMusicEnabled());
       this.music.start();
       return true;
     } catch (err) {
@@ -1237,6 +1238,7 @@ export class Audio implements System {
 
     const music = this.music;
     if (music) {
+      music.setEnabled(isMusicEnabled());
       music.setFull(state === RaceState.Racing);
       music.setDuck(paused);
       const laps = race?.totalLaps ?? 3;

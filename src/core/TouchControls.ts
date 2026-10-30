@@ -83,6 +83,7 @@
  *    spawn a steering stick, which is its whole documented purpose.
  * ============================================================================
  */
+import { languageText, translateLabels } from '../ui/Language';
 import { RaceState, type Ctx } from '../types';
 import { DEFAULTS, TUTORIAL_VERSION, load, save, type ControlPrefsData, type Hand, type Scheme } from './ControlPrefs';
 
@@ -358,6 +359,7 @@ export class TouchControls {
     const root = document.createElement('div');
     root.className = 'tc-root';
     root.innerHTML = MARKUP;
+    translateLabels(root);
     document.body.appendChild(root);
     this.root = root;
 
@@ -1393,7 +1395,7 @@ export class TouchControls {
 
     const player = race.player;
     const say = (word: string, where: 'stick' | 'drift') => {
-      if (this.coachEl.textContent !== word) this.coachEl.textContent = word;
+      languageText(this.coachEl, word);
       this.coachEl.setAttribute('data-at', where);
       this.coachEl.classList.add('on');
       if (where === 'stick') {
@@ -1481,8 +1483,8 @@ const MARKUP = `
 
 <div class="tc-cluster">
   <div class="tc-btn tc-look"  data-btn="look"><span>&#9664;&#9654;</span></div>
-  <div class="tc-btn tc-brake" data-btn="brake"><span>BRAKE</span></div>
-  <div class="tc-btn tc-gas"   data-btn="gas"><span>GAS</span></div>
+  <div class="tc-btn tc-brake" data-btn="brake"><span data-i18n="BRAKE">BRAKE</span></div>
+  <div class="tc-btn tc-gas"   data-btn="gas"><span data-i18n="GAS">GAS</span></div>
   <div class="tc-btn tc-item"  data-btn="item">
     <svg viewBox="0 0 40 40" aria-hidden="true">
       <rect x="6" y="6" width="28" height="28" rx="7" fill="none" stroke="currentColor" stroke-width="3"/>
@@ -1492,13 +1494,13 @@ const MARKUP = `
   <div class="tc-btn tc-drift" data-btn="drift">
     <div class="tc-halo"></div>
     <div class="tc-halo-rungs"></div>
-    <span>DRIFT</span>
+    <span data-i18n="DRIFT">DRIFT</span>
   </div>
 </div>
 
 <div class="tc-coach"></div>
 
-<div class="tc-rotate"><div><b>Rotate your device</b><br/>Kart Royale plays in landscape.</div></div>
+<div class="tc-rotate"><div><b data-i18n="Rotate your device">Rotate your device</b><br/><span data-i18n="Kart Royale plays in landscape.">Kart Royale plays in landscape.</span></div></div>
 `;
 
 const CSS = `

@@ -18,8 +18,14 @@ try {
     const T=await import('/kart-royale/node_modules/three/build/three.module.js');
     const {loadCharacters}=await import('/kart-royale/src/kart/Characters.ts');
     const {buildKart}=await import('/kart-royale/src/kart/KartModel.ts');
+    const {CHARACTER_COLORS}=await import('/kart-royale/src/kart/CharacterColors.ts');
     await loadCharacters();
-    const kart=buildKart({name,color:new T.Color('#ff3b5c')}).root;
+    const palette=CHARACTER_COLORS[name];
+    const kart=buildKart({name,color:new T.Color(palette.base)}).root;
+    const livery=kart.userData.livery;
+    if (livery.base.getHex()!==palette.base || livery.trim.getHex()!==palette.trim || livery.accent.getHex()!==palette.accent) {
+      throw new Error(`Character palette mismatch: ${name}`);
+    }
     const rig=kart.userData.driver;
     const character=kart.getObjectByName(name.toLowerCase());
     const oldRotation=character.parent.rotation.z;

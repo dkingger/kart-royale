@@ -1,3 +1,4 @@
+import { languageText } from './ui/Language';
 import * as THREE from 'three';
 import { RaceState, type Ctx, type System } from './types';
 import { Bus } from './core/Bus';
@@ -156,7 +157,7 @@ function bootProgress(frac: number, label: string) {
   const bar = document.querySelector<HTMLElement>('.boot-bar i');
   const step = document.querySelector<HTMLElement>('.boot-step');
   if (bar) bar.style.width = `${Math.round(frac * 100)}%`;
-  if (step) step.textContent = label;
+  if (step) languageText(step, label);
 }
 
 async function boot() {

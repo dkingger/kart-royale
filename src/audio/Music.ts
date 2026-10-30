@@ -81,6 +81,10 @@ export class Music {
   private readonly s: Synth;
 
   private readonly out: GainNode;
+  private readonly musicGate: GainNode;
+  private readonly reverbGate: GainNode;
+  private readonly delayGate: GainNode;
+  private enabled: boolean;
   private readonly padG: GainNode;
   private readonly arpG: GainNode;
   private readonly bassG: GainNode;
@@ -99,10 +103,17 @@ export class Music {
   private finalLap = false;
   private ducked = false;
 
-  constructor(s: Synth) {
+  constructor(s: Synth, enabled = true) {
     this.s = s;
+    this.enabled = enabled;
+    this.musicGate = s.gain(enabled ? 1 : 0);
+    this.reverbGate = s.gain(enabled ? 1 : 0);
+    this.delayGate = s.gain(enabled ? 1 : 0);
+    this.musicGate.connect(s.music);
+    this.reverbGate.connect(s.reverbIn);
+    this.delayGate.connect(s.delayIn);
     this.out = s.gain(1);
-    this.out.connect(s.music);
+    this.out.connect(this.musicGate);
 
     this.padG = s.gain(0.5);
     this.arpG = s.gain(0.34);
@@ -112,12 +123,12 @@ export class Music {
     for (const g of [this.padG, this.arpG, this.bassG, this.drumG, this.leadG]) g.connect(this.out);
 
     // Pad and arp live in the reverb; the rhythm section stays dry and forward.
-    s.send(this.padG, s.reverbIn, 0.55);
-    s.send(this.arpG, s.delayIn, 0.3);
-    s.send(this.arpG, s.reverbIn, 0.16);
-    s.send(this.leadG, s.delayIn, 0.22);
-    s.send(this.leadG, s.reverbIn, 0.2);
-    s.send(this.drumG, s.reverbIn, 0.06);
+    s.send(this.padG, this.reverbGate, 0.55);
+    s.send(this.arpG, this.delayGate, 0.3);
+    s.send(this.arpG, this.reverbGate, 0.16);
+    s.send(this.leadG, this.delayGate, 0.22);
+    s.send(this.leadG, this.reverbGate, 0.2);
+    s.send(this.drumG, this.reverbGate, 0.06);
   }
 
   start() {
@@ -132,6 +143,15 @@ export class Music {
   stop() {
     this.running = false;
     this.s.glide(this.out.gain, EPS, 0.3);
+  }
+
+  /** Gate dry music AND its effect sends; engine and item sounds keep playing. */
+  setEnabled(enabled: boolean) {
+    if (this.enabled === enabled) return;
+    this.enabled = enabled;
+    for (const gate of [this.musicGate, this.reverbGate, this.delayGate]) {
+      this.s.glide(gate.gain, enabled ? 1 : 0, 0.04);
+    }
   }
 
   /** Full band during the race, thin arrangement everywhere else. */
@@ -462,7 +482,7 @@ export class Music {
     hp.connect(pk);
     pk.connect(g);
     g.connect(this.drumG);
-    const send = s.send(g, s.reverbIn, 0.3);
+    const send = s.send(g, this.reverbGate, 0.3);
     s.perc(g.gain, t, 0.3, 0.004, 0.9);
     n.start(t, 0.4);
     n.stop(t + 1.0);

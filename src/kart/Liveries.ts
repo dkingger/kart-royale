@@ -24,6 +24,7 @@
 import * as THREE from 'three';
 import { createNoise2D } from 'simplex-noise';
 import type { KartStats } from '../types';
+import { CHARACTER_COLORS } from './CharacterColors';
 import { injectEnvResponse } from '../render/Materials';
 
 // ---------------------------------------------------------------------------
@@ -2003,6 +2004,12 @@ export function getLivery(stats: KartStats): Livery {
   const index = _nextIndex++ % 8;
   const base = stats.color.clone();
   const d = derive(index, base);
+  const palette = CHARACTER_COLORS[stats.name];
+  if (palette) {
+    d.trim.setHex(palette.trim);
+    d.accent.setHex(palette.accent);
+    d.rim.copy(d.trim).multiplyScalar(0.35);
+  }
   const partial = {
     index,
     name: stats.name || 'RACER',

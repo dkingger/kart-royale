@@ -13,6 +13,8 @@
 import { RaceState, type Ctx, type IKart, type KartStats } from '../types';
 import { el, formatClock, ordinalSuffix, cssColor, clamp } from './uiUtil';
 import { ControlsMenu } from './ControlsMenu';
+import { getLanguage, setLanguage, languageText, t, type Language } from './Language';
+import { isMusicEnabled, setMusicEnabled } from '../audio/MusicPreference';
 
 export type ScreenName = 'none' | 'title' | 'select' | 'pause' | 'results';
 
@@ -428,9 +430,70 @@ export class Menus {
     this.titlePrompt = el('div', 'kr-prompt', wrap);
     this.titleGlyphs = el('div', 'kr-glyphs', wrap);
     this.titleHint = el('div', 'kr-hint', wrap);
-    const cbtn = el('div', 'kr-btn kr-btn-controls', wrap, 'Controls');
+    const actions = el('div', 'kr-title-actions', wrap);
+    const music = el('button', 'kr-btn kr-btn-controls', actions) as HTMLButtonElement;
+    music.type = 'button';
+    const syncMusic = () => {
+      languageText(music, isMusicEnabled() ? 'Mute music' : 'Unmute music');
+      music.setAttribute('aria-pressed', String(!isMusicEnabled()));
+      music.setAttribute('aria-label', t('Mute music'));
+    };
+    syncMusic();
+    // Keep keyboard activation from reaching the game's Enter/Space start shortcut.
+    music.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+    });
+    music.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+    });
+    music.onclick = (e) => {
+      e.stopPropagation();
+      setMusicEnabled(!isMusicEnabled());
+      syncMusic();
+      this.ui('confirm');
+    };
+    const cbtn = el('div', 'kr-btn kr-btn-controls', actions, 'Controls');
     cbtn.onclick = (e) => { e.stopPropagation(); this.controls.show(); };
-    this.syncTouchCopy(false);
+    const languages = el('div', 'kr-languages', inner);
+    languages.setAttribute('role', 'group');
+    const flags: Record<Language, string> = {
+      da: '<svg viewBox="0 0 37 28" aria-hidden="true"><path fill="#c8102e" d="M0 0h37v28H0z"/><path fill="#fff" d="M12 0h4v28h-4zM0 12h37v4H0z"/></svg>',
+      en: '<svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="kr-uk-flag"><path d="M0 0h60v30H0z"/></clipPath><g clip-path="url(#kr-uk-flag)"><path fill="#012169" d="M0 0h60v30H0z"/><path stroke="#fff" stroke-width="6" d="m0 0 60 30m0-30L0 30"/><path fill="#c8102e" d="M0 0v3l54 27h6v-3L6 0zm60 0h-6L0 27v3h6L60 3z"/><path stroke="#fff" stroke-width="10" d="M30 0v30M0 15h60"/><path stroke="#c8102e" stroke-width="6" d="M30 0v30M0 15h60"/></g></svg>',
+    };
+    const choices: HTMLButtonElement[] = [];
+    for (const [code, label] of [['da', 'Dansk'], ['en', 'English']] as const) {
+      const button = el('button', 'kr-btn kr-language', languages) as HTMLButtonElement;
+      button.type = 'button';
+      button.dataset.language = code;
+      button.lang = code;
+      button.setAttribute('aria-label', label);
+      button.innerHTML = flags[code] + `<span>${label}</span>`;
+      for (const event of ['keydown', 'keyup']) button.addEventListener(event, (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+      });
+      button.onclick = (e) => { e.stopPropagation(); setLanguage(code); this.ui('confirm'); };
+      choices.push(button);
+    }
+    const syncLanguage = () => {
+      languages.setAttribute('aria-label', t('Language'));
+      for (const button of choices) {
+        const selected = button.dataset.language === getLanguage();
+        button.setAttribute('aria-pressed', String(selected));
+        button.classList.toggle('sel', selected);
+      }
+      this.touchCopy = null;
+      this.syncTouchCopy(this.ctx?.input.touch ?? false);
+      syncMusic();
+      this.pauseOrderKey = '';
+      this.resultsBuilt = false;
+      this.cards.forEach((card, i) => {
+        const name = this.ctx?.race.karts[i]?.stats.name;
+        const portrait = card.querySelector('img');
+        if (name && portrait) portrait.alt = t(name);
+      });
+    };
+    window.addEventListener('kart-language-change', syncLanguage);
+    syncLanguage();
     return s;
   }
 
@@ -450,18 +513,18 @@ export class Menus {
   private syncTouchCopy(touch: boolean) {
     if (this.touchCopy === touch) return;
     this.touchCopy = touch;
-    this.titlePrompt.textContent = touch ? 'Tap to Start' : 'Press Enter to Start';
+    languageText(this.titlePrompt, touch ? 'Tap to Start' : 'Press Enter to Start');
     if (touch) {
       this.titleGlyphs.innerHTML =
-        '<div class="kr-gl"><span class="kr-gl-stick"><i></i><b></b></span>Steer</div>' +
-        '<div class="kr-gl"><span class="kr-gl-drift">DRIFT</span>Slide</div>' +
-        '<div class="kr-gl"><span class="kr-gl-item">+</span>Fire</div>';
+        `<div class="kr-gl"><span class="kr-gl-stick"><i></i><b></b></span>${t('Steer')}</div>` +
+        `<div class="kr-gl"><span class="kr-gl-drift">DRIFT</span>${t('Slide')}</div>` +
+        `<div class="kr-gl"><span class="kr-gl-item">+</span>${t('Fire')}</div>`;
       this.titleHint.innerHTML = '';
     } else {
       this.titleGlyphs.innerHTML = '';
       this.titleHint.innerHTML =
-        '<b>&#8592;</b><b>&#8594;</b> steer &nbsp;&nbsp; <b>&#8593;</b> accelerate &nbsp;&nbsp; ' +
-        '<b>Shift</b> drift &nbsp;&nbsp; <b>Space</b> item &nbsp;&nbsp; <b>Esc</b> pause';
+        `<b>&#8592;</b><b>&#8594;</b> ${t('steer')} &nbsp;&nbsp; <b>&#8593;</b> ${t('accelerate')} &nbsp;&nbsp; ` +
+        `<b>Shift</b> ${t('drift')} &nbsp;&nbsp; <b>Space</b> ${t('item')} &nbsp;&nbsp; <b>Esc</b> ${t('pause')}`;
     }
   }
 
@@ -486,7 +549,12 @@ export class Menus {
       const col = cssColor(k.stats.color);
       c.style.setProperty('--c', col);
       const chip = el('div', 'kr-card-chip', c);
-      el('div', 'kr-card-init', chip, k.stats.name.charAt(0).toUpperCase());
+      const portrait = el('img', 'kr-card-portrait', chip);
+      const file = k.stats.name === 'Astronaut' ? 'alien' : k.stats.name.toLowerCase();
+      portrait.src = `${import.meta.env.BASE_URL}portraits/${file}.png`;
+      portrait.alt = t(k.stats.name);
+      portrait.width = portrait.height = 1024;
+      portrait.draggable = false;
       if (k.isPlayer) el('div', 'kr-card-you', c, 'You');
       el('div', 'kr-card-name', c, k.stats.name);
       const stats = el('div', 'kr-stats', c);
@@ -651,8 +719,7 @@ export class Menus {
     const order: IKart[] = race.standings.length ? race.standings : race.karts;
 
     const place = player ? player.place : 1;
-    this.resultTitle.textContent =
-      place === 1 ? 'Winner' : `${place}${ordinalSuffix(place)} place`;
+    languageText(this.resultTitle, place === 1 ? 'Winner' : `${place}${ordinalSuffix(place)} place`);
 
     this.standingsEl.textContent = '';
     order.forEach((k, i) => {

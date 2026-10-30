@@ -35,18 +35,19 @@ import {
 } from '../types';
 import { Kart } from '../kart/Kart';
 import { loadCharacters } from '../kart/Characters';
+import { CHARACTER_COLORS } from '../kart/CharacterColors';
 import { AIField, type DriveCmd } from './AI';
 import { Items } from './Items';
 
 const ROSTER: KartStats[] = [
-  { name: 'Sherlock',   color: new THREE.Color(0xff3b5c), accelMul: 1.00, topSpeedMul: 1.00, weightMul: 1.0,  handlingMul: 1.00 },
-  { name: 'Frankenstein',    color: new THREE.Color(0x2ea8ff), accelMul: 0.92, topSpeedMul: 1.08, weightMul: 1.2,  handlingMul: 0.92 },
-  { name: 'Pip',    color: new THREE.Color(0xffd23f), accelMul: 1.12, topSpeedMul: 0.93, weightMul: 0.82, handlingMul: 1.12 },
-  { name: 'Bramble',color: new THREE.Color(0x4ade5a), accelMul: 1.02, topSpeedMul: 0.99, weightMul: 0.95, handlingMul: 1.05 },
-  { name: 'Onyx',   color: new THREE.Color(0x8b5cf6), accelMul: 0.95, topSpeedMul: 1.05, weightMul: 1.1,  handlingMul: 0.96 },
-  { name: 'Marlow', color: new THREE.Color(0xff8a3d), accelMul: 1.05, topSpeedMul: 0.97, weightMul: 0.9,  handlingMul: 1.08 },
-  { name: 'Frost',  color: new THREE.Color(0x7ee8fa), accelMul: 0.98, topSpeedMul: 1.02, weightMul: 1.0,  handlingMul: 1.00 },
-  { name: 'Cinder', color: new THREE.Color(0xe8456b), accelMul: 1.08, topSpeedMul: 0.95, weightMul: 0.88, handlingMul: 1.10 },
+  { name: 'Sherlock',   color: new THREE.Color(CHARACTER_COLORS.Sherlock.base), accelMul: 1.00, topSpeedMul: 1.00, weightMul: 1.0,  handlingMul: 1.00 },
+  { name: 'Frankenstein',    color: new THREE.Color(CHARACTER_COLORS.Frankenstein.base), accelMul: 0.92, topSpeedMul: 1.08, weightMul: 1.2,  handlingMul: 0.92 },
+  { name: 'Astronaut', color: new THREE.Color(CHARACTER_COLORS.Astronaut.base), accelMul: 1.12, topSpeedMul: 0.93, weightMul: 0.82, handlingMul: 1.12 },
+  { name: 'Pirat',     color: new THREE.Color(CHARACTER_COLORS.Pirat.base), accelMul: 1.02, topSpeedMul: 0.99, weightMul: 0.95, handlingMul: 1.05 },
+  { name: 'Dracula',   color: new THREE.Color(CHARACTER_COLORS.Dracula.base), accelMul: 0.95, topSpeedMul: 1.05, weightMul: 1.1,  handlingMul: 0.96 },
+  { name: 'Bedstemor', color: new THREE.Color(CHARACTER_COLORS.Bedstemor.base), accelMul: 1.05, topSpeedMul: 0.97, weightMul: 0.9,  handlingMul: 1.08 },
+  { name: 'Robot',     color: new THREE.Color(CHARACTER_COLORS.Robot.base), accelMul: 0.98, topSpeedMul: 1.02, weightMul: 1.0,  handlingMul: 1.00 },
+  { name: 'Mumie',     color: new THREE.Color(CHARACTER_COLORS.Mumie.base), accelMul: 1.08, topSpeedMul: 0.95, weightMul: 0.88, handlingMul: 1.10 },
 ];
 
 // --- director tuning ---------------------------------------------------------

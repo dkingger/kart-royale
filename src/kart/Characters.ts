@@ -13,6 +13,12 @@ interface CharacterSpec {
 const characters: Record<string, CharacterSpec> = {
   Sherlock: { file: 'sherlock', height: 1.35, width: 0.9, depth: 0.8, bottom: -0.22, forward: 0.35 },
   Frankenstein: { file: 'frankenstein', height: 1.40, width: 0.8, depth: 0.65, bottom: -0.22, forward: 0.32 },
+  Astronaut: { file: 'astronaut', height: 1.35, width: 0.9, depth: 0.75, bottom: -0.22, forward: 0.35 },
+  Pirat: { file: 'pirat', height: 1.40, width: 0.85, depth: 0.75, bottom: -0.22, forward: 0.35 },
+  Dracula: { file: 'dracula', height: 1.35, width: 0.8, depth: 0.7, bottom: -0.22, forward: 0.35 },
+  Bedstemor: { file: 'bedstemor', height: 1.35, width: 0.9, depth: 0.75, bottom: -0.22, forward: 0.35 },
+  Robot: { file: 'robot', height: 1.35, width: 0.9, depth: 0.75, bottom: -0.22, forward: 0.35 },
+  Mumie: { file: 'mumie', height: 1.35, width: 0.9, depth: 0.75, bottom: -0.22, forward: 0.35 },
 };
 const templates = new Map<string, THREE.Group>();
 

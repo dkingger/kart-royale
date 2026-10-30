@@ -5,6 +5,8 @@
  * force a style recalc on each one even when the value has not moved.
  */
 
+import { getLanguage, languageText } from './Language';
+
 export const TIER_COLORS = ['#a8b6cc', '#4fc3ff', '#ff9d2e', '#c05cff'];
 
 export function clamp(v: number, lo: number, hi: number) {
@@ -24,13 +26,14 @@ export function el<K extends keyof HTMLElementTagNameMap>(
 ): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
-  if (text !== undefined) e.textContent = text;
+  if (text !== undefined) languageText(e, text);
   if (parent) parent.appendChild(e);
   return e;
 }
 
 /** Ordinal suffix only — "st" / "nd" / "rd" / "th". */
 export function ordinalSuffix(n: number) {
+  if (getLanguage() === 'da') return '.';
   const t = n % 100;
   if (t >= 11 && t <= 13) return 'th';
   switch (n % 10) {
@@ -67,7 +70,7 @@ export function setText(e: Element, v: string) {
   const c = e as Cached;
   if (c.__ut === v) return;
   c.__ut = v;
-  e.textContent = v;
+  languageText(e, v);
 }
 
 /** Cached inline-style write (also used for custom properties). */

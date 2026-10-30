@@ -53,7 +53,7 @@ export interface FeelParams {
 const SHIPPED: FeelParams = {
   fovSpeed: 5.0,
   armDistSpeed: 0.55,
-  armHeightSpeed: -0.22,
+  armHeightSpeed: 0.10,
   streak: 1,
   rush: 1,
   fringe: 1,

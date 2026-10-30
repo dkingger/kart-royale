@@ -85,13 +85,13 @@ const PIVOT_UP = 0.62;
 /** Metres behind the pivot at rest, and the extra length at top speed. Small:
  *  the lens opening with speed is what should make the frame breathe, and an
  *  arm that grows to match holds the subject at a constant size in every shot. */
-const ARM_DIST = 5.6;
+const ARM_DIST = 6.2;
 const ARM_DIST_SPEED = 0.55;
-/** Metres above the pivot, i.e. ~1.8 m over the road. A chase camera that
- *  looks down is a map; this one runs level so the horizon sits near the
- *  middle of the frame and the road compresses toward it. */
-const ARM_HEIGHT = 1.15;
-const ARM_HEIGHT_SPEED = -0.22;
+/** Metres above the pivot, i.e. ~2.9 m over the road. The elevated view clears
+ *  the larger character silhouettes and reveals the next corner over the kart.
+ *  Keep that sightline at speed instead of dropping toward the driver's head. */
+const ARM_HEIGHT = 2.30;
+const ARM_HEIGHT_SPEED = 0.10;
 /** Boost: the arm comes in and drops. Paired with FOV_BOOST — the field opens
  *  by the matching proportion, so the kart holds its size while the world
  *  stretches past the frame edge. */
