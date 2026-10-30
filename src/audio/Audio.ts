@@ -41,6 +41,7 @@ import {
 import { EPS, mtof, Synth } from './Synth';
 import { Music } from './Music';
 import { isMusicEnabled } from './MusicPreference';
+import { activeCourse } from '../world/Course';
 
 // --- module scope scratch: nothing in update() allocates ---------------------
 const _camPos = new THREE.Vector3();
@@ -954,7 +955,7 @@ export class Audio implements System {
       this.failed = true;
       return;
     }
-    const vol = ctx.settings?.masterVolume ?? 0.8;
+    const vol = ctx.settings?.masterVolume ?? 0.64;
     if (this.build(null, vol)) this.synth!.ctx.resume().catch(() => {});
   }
 
@@ -1083,7 +1084,7 @@ export class Audio implements System {
     if (ac.state !== 'running') return;
     const now = ac.currentTime;
 
-    const vol = ctx.settings?.masterVolume ?? 0.8;
+    const vol = ctx.settings?.masterVolume ?? 0.64;
     if (vol !== this.lastVolume) {
       this.lastVolume = vol;
       s.setMasterVolume(vol);
@@ -1099,7 +1100,7 @@ export class Audio implements System {
 
     // Tunnel: the art bible puts it at t 0.52–0.60. Swelling the reverb return
     // and the engine send through it costs nothing and reads instantly.
-    const inTunnel = player && player.t > 0.505 && player.t < 0.625 ? 1 : 0;
+    const inTunnel = activeCourse === 'sunset' && player && player.t > 0.505 && player.t < 0.625 ? 1 : 0;
     if (inTunnel !== this.tunnel) {
       this.tunnel = inTunnel;
       s.glide(s.reverbReturn.gain, inTunnel ? 1.35 : 0.5, 0.25, now);

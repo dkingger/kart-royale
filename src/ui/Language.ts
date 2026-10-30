@@ -4,6 +4,7 @@ let language: Language = 'da';
 try { if (localStorage.getItem(KEY) === 'en') language = 'en'; } catch { /* optional storage */ }
 
 const danish: Record<string, string> = {
+  'Choose track': 'Vælg bane', 'Moon Tower': 'Månetårnet', 'Moon Tower · Test track': 'Månetårnet · Testbane',
   'Language': 'Sprog', 'Mute music': 'Sluk musik', 'Unmute music': 'Tænd musik',
   'Controls': 'Styring', 'Press Enter to Start': 'Tryk Enter for at starte', 'Tap to Start': 'Tryk for at starte',
   'Choose your racer': 'Vælg din kører', 'Start race': 'Start løbet', 'You': 'Dig',

@@ -2205,3 +2205,19 @@ html[data-touch][data-touch-hand="left"] .kr .kr-pos {
   .kr-roster { margin-top: 0.7vmin; }
   .kr-menu-list { margin-top: 0.7vmin; }
 }
+
+/* Course changes load a separate world; both original and prototype stay available. */
+.kr-courses { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 1.5vmin; }
+.kr-course { min-height: 42px; font-family: inherit; font-size: clamp(10px, 1.6vmin, 16px); padding: 0.5em 1.2em; }
+.kr-course:focus-visible { outline: 3px solid #ffc84e; outline-offset: 3px; }
+.kr-course { display: inline-flex; align-items: center; justify-content: center; gap: 0.7em; }
+.kr-beta {
+  padding: 0.25em 0.55em;
+  border-radius: 5px;
+  background: #e6bd6b;
+  color: #30200d;
+  font-size: 0.68em;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+}

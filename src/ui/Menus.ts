@@ -10,6 +10,7 @@
  *
  * `?ui=title|select|pause|results` forces a screen, for capture and review.
  */
+import { activeCourse, openCourse } from '../world/Course';
 import { RaceState, type Ctx, type IKart, type KartStats } from '../types';
 import { el, formatClock, ordinalSuffix, cssColor, clamp } from './uiUtil';
 import { ControlsMenu } from './ControlsMenu';
@@ -418,7 +419,7 @@ export class Menus {
     wrap.style.flexDirection = 'column';
     wrap.style.alignItems = 'center';
     wrap.innerHTML = LOGO_SVG.replace('RAYS', buildRays());
-    el('div', 'kr-sub', wrap, 'Sunset Bay Circuit');
+    el('div', 'kr-sub', wrap, activeCourse === 'moon' ? 'Moon Tower · Test track' : 'Sunset Bay Circuit');
     // Built empty; `syncTouchCopy` fills it from `ctx.input.touch` every time
     // that flips. This used to run its OWN `matchMedia('(pointer: coarse)')`
     // probe once, in the constructor — which is exactly the check that fails on
@@ -430,6 +431,22 @@ export class Menus {
     this.titlePrompt = el('div', 'kr-prompt', wrap);
     this.titleGlyphs = el('div', 'kr-glyphs', wrap);
     this.titleHint = el('div', 'kr-hint', wrap);
+    const courses = el('div', 'kr-courses', wrap);
+    courses.setAttribute('role', 'group');
+    courses.setAttribute('aria-label', t('Choose track'));
+    for (const [id, title] of [['sunset', 'Sunset Bay'], ['moon', 'Moon Tower']] as const) {
+      const button = el('button', 'kr-btn kr-course', courses) as HTMLButtonElement;
+      el('span', undefined, button, title);
+      if (id === 'moon') el('span', 'kr-beta', button, 'Beta');
+      button.type = 'button';
+      button.dataset.course = id;
+      button.setAttribute('aria-pressed', String(activeCourse === id));
+      button.classList.toggle('sel', activeCourse === id);
+      for (const event of ['keydown', 'keyup']) button.addEventListener(event, (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') e.stopPropagation();
+      });
+      button.onclick = (e) => { e.stopPropagation(); openCourse(id); };
+    }
     const actions = el('div', 'kr-title-actions', wrap);
     const music = el('button', 'kr-btn kr-btn-controls', actions) as HTMLButtonElement;
     music.type = 'button';
@@ -476,6 +493,7 @@ export class Menus {
     }
     const syncLanguage = () => {
       languages.setAttribute('aria-label', t('Language'));
+      courses.setAttribute('aria-label', t('Choose track'));
       for (const button of choices) {
         const selected = button.dataset.language === getLanguage();
         button.setAttribute('aria-pressed', String(selected));

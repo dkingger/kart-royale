@@ -668,7 +668,8 @@ export function createSettings(): Settings {
     ? ({ low: Quality.Low, medium: Quality.Medium, high: Quality.High, ultra: Quality.Ultra }[forced] ??
        Quality.High)
     : detectQuality(dev);
-  const s: Settings = { quality: q, masterVolume: 0.8, ...PRESETS[q] };
+  // 80% of the previous 0.8 master gain, applied after the mix/limiter.
+  const s: Settings = { quality: q, masterVolume: 0.64, ...PRESETS[q] };
   // ?scale=0.75 etc. lets the screenshot harness trade resolution for time
   const scale = parseFloat(params.get('scale') || '');
   if (Number.isFinite(scale) && scale > 0) s.renderScale = scale;

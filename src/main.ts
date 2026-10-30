@@ -1,3 +1,6 @@
+import { activeCourse } from './world/Course';
+import { MoonTrack } from './world/MoonTrack';
+import { MoonEnvironment } from './world/MoonEnvironment';
 import { languageText } from './ui/Language';
 import * as THREE from 'three';
 import { RaceState, type Ctx, type System } from './types';
@@ -73,10 +76,10 @@ function viewportSize(): { w: number; h: number } | null {
 
 const pipeline = new RenderPipeline(parent);
 const input = new Input();
-const sky = new Sky();
+const sky = activeCourse === 'moon' ? new MoonEnvironment() : new Sky();
 const materials = new Materials();
-const track = new Track();
-const scenery = new Scenery();
+const track = activeCourse === 'moon' ? new MoonTrack() : new Track();
+const scenery: System = activeCourse === 'moon' ? {} : new Scenery();
 const effects = new Effects();
 const items = new Items();
 const race = new Race();
