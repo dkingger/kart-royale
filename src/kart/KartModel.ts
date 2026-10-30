@@ -37,7 +37,7 @@ import {
   type Built, type Livery, type Section,
 } from './Liveries';
 import { buildDriver, driverTriangles, DriverRig } from './Driver';
-import { createSherlock } from './Sherlock';
+import { createCharacter } from './Characters';
 
 // --- hard dimensions ---------------------------------------------------------
 const WHEEL_R = 0.36;
@@ -1205,7 +1205,8 @@ export function buildKart(
 
   // --- driver -------------------------------------------------------------
   const driver: DriverRig = buildDriver(livery);
-  if (stats.name === 'Sherlock') driver.setCharacter(createSherlock());
+  const character = createCharacter(stats.name);
+  if (character) driver.setCharacter(character);
   driver.root.position.set(0, 0.42, -0.14);
   body.add(driver.root);
 

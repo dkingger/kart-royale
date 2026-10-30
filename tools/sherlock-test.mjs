@@ -2,6 +2,8 @@
 import assert from 'node:assert/strict';
 import puppeteer from 'puppeteer';
 import { startVite } from './vite-server.mjs';
+const name = process.argv[2] ?? 'Sherlock';
+const slug = name.toLowerCase();
 const server = await startVite(5180);
 const browser = await puppeteer.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader']});
 try {
@@ -12,14 +14,14 @@ try {
   await page.setRequestInterception(true);
   page.on('request',r=>r.isNavigationRequest()?r.respond({status:200,contentType:'text/html',body:'<body style="margin:0"></body>'}):r.continue());
   await page.goto('http://localhost:5180/kart-royale/');
-  const result = await page.evaluate(async()=>{
+  const result = await page.evaluate(async(name)=>{
     const T=await import('/kart-royale/node_modules/three/build/three.module.js');
-    const {loadSherlock}=await import('/kart-royale/src/kart/Sherlock.ts');
+    const {loadCharacters}=await import('/kart-royale/src/kart/Characters.ts');
     const {buildKart}=await import('/kart-royale/src/kart/KartModel.ts');
-    await loadSherlock();
-    const kart=buildKart({name:'Sherlock',color:new T.Color('#ff3b5c')}).root;
+    await loadCharacters();
+    const kart=buildKart({name,color:new T.Color('#ff3b5c')}).root;
     const rig=kart.userData.driver;
-    const character=kart.getObjectByName('sherlock');
+    const character=kart.getObjectByName(name.toLowerCase());
     const oldRotation=character.parent.rotation.z;
     rig.setPose(1,1,0,0,0);rig.update(0.1);
     const leans=character.parent.rotation.z!==oldRotation;
@@ -33,11 +35,11 @@ try {
     document.body.replaceChildren(renderer.domElement);
     window.preview={scene,renderer,camera};renderer.render(scene,camera);
     return {character:!!character,leans,oldDriverRemoved:!kart.getObjectByName('driverHelmet'),wheel:!!kart.getObjectByName('steeringWheel')};
-  });
+  }, name);
   assert.deepEqual(result,{character:true,leans:true,oldDriverRemoved:true,wheel:true});
   assert.deepEqual(errors,[]);
-  await page.screenshot({path:'/tmp/sherlock-kart-front.png'});
+  await page.screenshot({path:`/tmp/${slug}-kart-front.png`});
   await page.evaluate(()=>{const p=window.preview;p.camera.position.set(-3,2.2,-4);p.camera.lookAt(0,.8,0);p.renderer.render(p.scene,p.camera)});
-  await page.screenshot({path:'/tmp/sherlock-kart-back.png'});
-  console.log('PASS',result);
+  await page.screenshot({path:`/tmp/${slug}-kart-back.png`});
+  console.log('PASS',name,result);
 } finally {await browser.close();server.stop();}
