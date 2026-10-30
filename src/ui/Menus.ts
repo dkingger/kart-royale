@@ -555,7 +555,6 @@ export class Menus {
       portrait.alt = t(k.stats.name);
       portrait.width = portrait.height = 1024;
       portrait.draggable = false;
-      if (k.isPlayer) el('div', 'kr-card-you', c, 'You');
       el('div', 'kr-card-name', c, k.stats.name);
       const stats = el('div', 'kr-stats', c);
       for (const def of STATS) {
@@ -580,6 +579,13 @@ export class Menus {
   private syncCards() {
     for (let i = 0; i < this.cards.length; i++) {
       this.cards[i].classList.toggle('sel', i === this.selected);
+    }
+    // Selection changes before Race.selectKart runs; the badge follows that preview.
+    const card = this.cards[this.selected];
+    if (card) {
+      const badge = this.rosterEl.querySelector('.kr-card-you');
+      if (badge) card.appendChild(badge);
+      else el('div', 'kr-card-you', card, 'You');
     }
   }
 
