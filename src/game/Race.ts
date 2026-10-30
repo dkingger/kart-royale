@@ -34,11 +34,12 @@ import {
   type KartStats,
 } from '../types';
 import { Kart } from '../kart/Kart';
+import { loadSherlock } from '../kart/Sherlock';
 import { AIField, type DriveCmd } from './AI';
 import { Items } from './Items';
 
 const ROSTER: KartStats[] = [
-  { name: 'Vela',   color: new THREE.Color(0xff3b5c), accelMul: 1.00, topSpeedMul: 1.00, weightMul: 1.0,  handlingMul: 1.00 },
+  { name: 'Sherlock',   color: new THREE.Color(0xff3b5c), accelMul: 1.00, topSpeedMul: 1.00, weightMul: 1.0,  handlingMul: 1.00 },
   { name: 'Koa',    color: new THREE.Color(0x2ea8ff), accelMul: 0.92, topSpeedMul: 1.08, weightMul: 1.2,  handlingMul: 0.92 },
   { name: 'Pip',    color: new THREE.Color(0xffd23f), accelMul: 1.12, topSpeedMul: 0.93, weightMul: 0.82, handlingMul: 1.12 },
   { name: 'Bramble',color: new THREE.Color(0x4ade5a), accelMul: 1.02, topSpeedMul: 0.99, weightMul: 0.95, handlingMul: 1.05 },
@@ -207,7 +208,8 @@ export class Race implements IRace {
 
   // ---------------------------------------------------------------- lifecycle
 
-  init(ctx: Ctx) {
+  async init(ctx: Ctx) {
+    await loadSherlock();
     this.ctx = ctx;
     const n = Math.min(RACER_COUNT, ROSTER.length);
     for (let i = 0; i < n; i++) {

@@ -739,6 +739,13 @@ export class DriverRig {
     };
   }
 
+  /** Preserve steering and body lean while replacing the unrigged figure. */
+  setCharacter(character: THREE.Object3D) {
+    // Remove rather than hide: the kart's shadow/LOD bake traverses hidden nodes too.
+    this.hips.remove(this.hips.children[0], this.head, this.armRig);
+    this.hips.add(character);
+  }
+
   /** Convenience for callers that would rather push a whole pose at once. */
   setPose(steer: number, lean: number, pitch: number, duck: number, apex: number) {
     this.steer = steer;
