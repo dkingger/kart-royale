@@ -123,6 +123,7 @@
     <script>
       (function () {
         var h = location.hostname;
+        if (h.endsWith('.github.io')) return;
         if (location.protocol.indexOf('http') !== 0) return;
         if (h === 'localhost' || h === '::1' || /^127\.|^0\.0\.0\.0$/.test(h)) return;
         var s = document.createElement('script');
